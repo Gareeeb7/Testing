@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 
 
 
-
+#loading classifier
 with open('ChatBot.pkl', 'rb') as f:
     clf = pickle.load(f)
     
@@ -23,30 +23,28 @@ def checkPostedData(postedData, functionName):
         else:
             return 200
 
+
 class Add(Resource):
     def post(self):
         
-        postedData = request.get_json()
+        postedData = request.data
+        print(postedData)
         #Steb 1b: Verify validity of posted data
         status_code = 200
         #status_code = checkPostedData(postedData, "add")
         if (status_code!=200):
             retJson = {
-                "Message": "An error happened",
+                "Message": "An error occured",
                 "Status Code":status_code
             }
             return jsonify(retJson)
 
         #If i am here, then status_code == 200
-        x = postedData["x"]
+        x = postedData
         # giving ans with classifier
         Ans = clf.predict([x])[0]
         
-        retMap = {
-            'Message':Ans ,
-            'Status Code': 200
-        }
-        return jsonify(retMap)
+        return Ans
 
 
 api.add_resource(Add, "/add")
